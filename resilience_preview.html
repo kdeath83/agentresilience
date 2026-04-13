@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Resilience Preview | CPS 230</title>
+    <style>
+        :root {
+            --aws-orange: #ff9900;
+            --aws-dark: #232f3e;
+            --pass: #1e8900;
+            --fail: #d13212;
+            --warn: #ff9900;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #232f3e;
+            background: #f7f7f7;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            background: var(--aws-dark);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #ff9900;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .preview-badge {
+            display: inline-block;
+            background: var(--aws-orange);
+            color: var(--aws-dark);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+        
+        .materiality-banner {
+            background: #ff9900;
+            color: #232f3e;
+            padding: 20px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .materiality-banner .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--aws-dark);
+            border-bottom: 2px solid var(--aws-orange);
+            padding-bottom: 10px;
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .score-number {
+            font-size: 72px;
+            font-weight: bold;
+            color: #1e8900;
+        }
+        
+        .score-status {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e8900;
+            margin-top: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--aws-dark);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: var(--aws-dark);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f7f7f7;
+        }
+        
+        .pass {
+            color: var(--pass);
+        }
+        
+        .fail {
+            color: var(--fail);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge.pass {
+            background: #e8f5e9;
+            color: var(--pass);
+        }
+        
+        .badge.fail {
+            background: #ffebee;
+            color: var(--fail);
+        }
+        
+        .details {
+            background: #fafafa;
+        }
+        
+        .mitigation {
+            font-size: 13px;
+            color: #666;
+            padding-top: 0;
+        }
+        
+        .info-list {
+            list-style: none;
+        }
+        
+        .info-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .value {
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        
+        .future-section {
+            background: linear-gradient(135deg, #232f3e 0%, #37475a 100%);
+            color: white;
+        }
+        
+        .future-section h2 {
+            border-bottom-color: var(--aws-orange);
+            color: white;
+        }
+        
+        .future-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .future-list li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .future-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--aws-orange);
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .agent-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-grid, .agent-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Agent Resilience Preview</h1>
+            <div class="subtitle">Exploring CPS 230 operational resilience for agentic infrastructure</div>
+            <span class="preview-badge">2-Hour Concept Demo</span>
+        </div>
+        
+        <div class="materiality-banner">
+            <div class="label">CPS 230 Materiality Classification</div>
+            <div style="font-size: 24px; margin-top: 5px;">
+                MATERIAL: Real-time Fraud Detection Agent
+            </div>
+            <div style="margin-top: 10px; opacity: 0.9;">
+                Handles $2,400,000 daily. Disruption = customer impact + potential regulatory breach. | 4 hours per CPS 230 operational resilience tolerance
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Agent Discovery (AWS Agent Registry)</h2>
+            <div class="agent-info">
+                <div>
+                    <div class="label">Agent ID</div>
+                    <div class="value">fraud-detection-v2-prod</div>
+                </div>
+                <div>
+                    <div class="label">Business Service</div>
+                    <div class="value">Payment Processing</div>
+                </div>
+                <div>
+                    <div class="label">Daily Transaction Volume</div>
+                    <div class="value">$2,400,000</div>
+                </div>
+                <div>
+                    <div class="label">CPS 230 RTO</div>
+                    <div class="value">4 hours</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #f7f7f7; border-radius: 6px;">
+                <div class="label">Description</div>
+                <div class="value" style="font-size: 14px; margin-top: 8px;">Analyzes transactions for anomalous patterns using LLM reasoning</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>CPS 230 Resilience Score</h2>
+            <div class="score-display">
+                <div class="score-number">100</div>
+                <div class="score-status">READY</div>
+                <div style="color: #666; margin-top: 10px;">
+                    Based on 3 failure scenario simulations
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-value">3/3</div>
+                    <div class="stat-label">Tests Passed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Critical Dependencies</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Critical Tests Passed</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Failure Scenario Tests</h2>
+            <p style="color: #666; margin-bottom: 20px;">
+                Simulated CPS 230 scenario testing against agent dependencies.
+                <br><em>Note: These are modeled scenarios, not live chaos engineering.</em>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dependency</th>
+                        <th>Recovery Time</th>
+                        <th>RTO Breach</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                            <tr class="pass">
+            <td><strong>transaction-mcp-server (mcp) unavailable</strong> [CRITICAL]</td>
+            <td>10 min</td>
+            <td>No</td>
+            <td><span class="badge pass">[OK] PASS</span></td>
+        </tr>
+        <tr class="details">
+            <td colspan="4" class="mitigation">Mitigation: Failover to rule-based fallback</td>
+        </tr>
+        <tr class="pass">
+            <td><strong>bedrock-claude-sonnet (llm) unavailable</strong> [CRITICAL]</td>
+            <td>120 min</td>
+            <td>No</td>
+            <td><span class="badge pass">[OK] PASS</span></td>
+        </tr>
+        <tr class="details">
+            <td colspan="4" class="mitigation">Mitigation: Circuit breaker + human escalation queue</td>
+        </tr>
+        <tr class="pass">
+            <td><strong>fraud-vector-db (database) unavailable</strong> </td>
+            <td>5 min</td>
+            <td>No</td>
+            <td><span class="badge pass">[OK] PASS</span></td>
+        </tr>
+        <tr class="details">
+            <td colspan="4" class="mitigation">Mitigation: Stale cache acceptable for 30 min</td>
+        </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card future-section">
+            <h2>Looking Ahead</h2>
+            <p style="opacity: 0.9; margin-bottom: 15px;">
+                We're not there yet — but we will be. In 12-18 months, APRA-regulated entities 
+                will have fleets of agents handling material operations. When that happens, 
+                we'll need automated operational resilience controls.
+            </p>
+            <ul class="future-list">
+                <li>Automated CPS 230 scenario testing for AI systems</li>
+                <li>Real-time RTO monitoring with EventBridge integration</li>
+                <li>Audit-ready evidence generation for APRA examinations</li>
+                <li>Materiality auto-classification from transaction patterns</li>
+                <li>Integration with existing GRC platforms (ServiceNow, Archer)</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>Generated: 2026-04-13 22:55:19 | 
+            Agent Resilience Preview | APRA CPS 230 × AWS Agent Registry × Agentic Infrastructure</p>
+            <p style="margin-top: 10px; font-size: 11px;">
+                This is a concept demonstration exploring future operational resilience patterns. 
+                Not production software. Not APRA guidance. Just a 2-hour exploration.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
