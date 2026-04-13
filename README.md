@@ -2,9 +2,8 @@
 
 **Exploring CPS 230 operational resilience for agentic infrastructure**
 
-> *"We're not there yet — but we will be."*
 
-This is a 2-hour concept demonstration exploring the intersection of:
+This is a demonstration exploring the intersection of:
 - **APRA CPS 230** operational resilience requirements
 - **AWS Agent Registry** for agent discovery and governance
 - **Agentic infrastructure** that will soon handle critical operations
@@ -13,7 +12,7 @@ This is a 2-hour concept demonstration exploring the intersection of:
 
 ## What This Is
 
-A preview of how we might automatically assess and test AI agent resilience against prudential standards **in the near future** (12-18 months).
+A preview of how we might automatically assess and test AI agent resilience against prudential standards **in the near future** 
 
 **Key components:**
 1. **Agent Discovery** — Query AWS Agent Registry for registered agents
@@ -51,7 +50,7 @@ open resilience_preview.html
 **Agent:** `fraud-detection-v2-prod`
 - Handles $2.4M in daily transaction analysis
 - Uses Bedrock Claude + MCP servers + vector DB
-- CPS 230 RTO requirement: 4 hours
+- RTO requirement: 4 hours
 
 **Tested failure modes:**
 - MCP server unavailability
@@ -64,7 +63,7 @@ open resilience_preview.html
 
 ## The Future We're Previewing
 
-When APRA-regulated entities have fleets of agents handling material operations:
+When APRA-regulated entities have fleets of agents handling critical operations:
 
 1. **Automated CPS 230 scenario testing** — Continuous resilience validation
 2. **Real-time RTO monitoring** — EventBridge-driven impact detection
@@ -85,11 +84,11 @@ When APRA-regulated entities have fleets of agents handling material operations:
 
 ## Why This Matters
 
-CPS 230 became enforceable in 2025. APRA expects operational resilience testing for material business services.
+CPS 230 became enforceable in 2025. APRA expects operational resilience testing for critical operations.
 
-But what happens when those "services" are AI agents?
+But what happens when those "operations" are AI agents?
 
-Most banks don't have this figured out yet. This demo asks: *what might it look like when they do?*
+Most regulated entities don't have this figured out yet. This demo asks: *what might it look like when they do?*
 
 ---
 
@@ -99,4 +98,4 @@ MIT — Fork it, break it, extend it. Just don't blame me if APRA asks hard ques
 
 ---
 
-*Built in 2 hours for a LinkedIn demo. Not investment advice. Not compliance advice. Just exploration.*
+*Not investment advice. Not compliance advice. Just exploration.*
